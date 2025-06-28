@@ -18,3 +18,13 @@ class CaseRead(CaseCreate):
     category: CategoryRead
     class Config:
         from_attributes = True
+
+
+class DocumentRead(BaseModel):
+    id: int
+    case_id: int
+    filename: str
+    uploaded_at: datetime
+
+    class Config:
+        from_attributes = True

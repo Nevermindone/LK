@@ -13,6 +13,7 @@ export default function NewCase() {
   const [title, setTitle]            = useState("");
   const [description, setDescription]= useState("");
   const [categoryId, setCategoryId]  = useState<number | "">("");
+  const [files, setFiles]            = useState<FileList | null>(null);
 
   const navigate = useNavigate();
 
@@ -28,11 +29,19 @@ export default function NewCase() {
     e.preventDefault();
     if (categoryId === "") return alert("Выберите категорию");
 
-    await http.post("/cases/", {
+    const { data } = await http.post("/cases/", {
       title,
       description,
       category_id: Number(categoryId),
     });
+
+    if (files && files.length) {
+      const fd = new FormData();
+      Array.from(files).forEach(f => fd.append("files", f));
+      await http.post(`/cases/${data.id}/documents`, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    }
 
     navigate("/");      // назад к списку дел
   };
@@ -72,6 +81,13 @@ export default function NewCase() {
           <option key={c.id} value={c.id}>{c.name}</option>
         ))}
       </select>
+
+      {/* ─ документы ─ */}
+      <input
+        type="file"
+        multiple
+        onChange={e => setFiles(e.target.files)}
+      />
 
       {/* ─ submit ─ */}
       <button
