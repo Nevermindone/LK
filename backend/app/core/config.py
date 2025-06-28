@@ -12,6 +12,7 @@ class Settings(BaseSettings):
 
     # --- API ---
     SECRET_KEY: str = "CHANGE_ME_TO_RANDOM_32_CHARS"
+    FILE_STORAGE_PATH: str = "/app/data/uploads"
 
     class Config:
         env_file = ".env"

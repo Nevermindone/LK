@@ -19,3 +19,18 @@ class Case(Base):
     created_at: Mapped[str] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     category: Mapped["Category"] = relationship(lazy="joined")
+    documents: Mapped[list["CaseDocument"]] = relationship(back_populates="case")
+
+
+class CaseDocument(Base):
+    __tablename__ = "case_documents"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    case_id: Mapped[int] = mapped_column(ForeignKey("cases.id"))
+    filename: Mapped[str] = mapped_column(String(200))
+    path: Mapped[str] = mapped_column(String(300))
+    uploaded_at: Mapped[str] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    case: Mapped["Case"] = relationship(back_populates="documents")
