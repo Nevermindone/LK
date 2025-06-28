@@ -23,6 +23,14 @@ async def list_cases(db: AsyncSession = Depends(get_async_session)):
     return res.scalars().all()
 
 
+@router.get("/{case_id}", response_model=schemas.CaseRead)
+async def get_case(case_id: int, db: AsyncSession = Depends(get_async_session)):
+    case = await db.get(models.Case, case_id)
+    if not case:
+        raise HTTPException(404, "Case not found")
+    return case
+
+
 @router.post("/", response_model=schemas.CaseRead, status_code=201)
 async def create_case(case: schemas.CaseCreate, db: AsyncSession = Depends(get_async_session)):
     category = await db.get(models.Category, case.category_id)
