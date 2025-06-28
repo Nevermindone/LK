@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "react-jsx",           // React 18, без need for import React
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+
+    "baseUrl": ".",               // чтобы работали пути "@/..."
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
+    /* Emit */
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    /* Source maps для debug */
+    "sourceMap": true
+  },
+
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
