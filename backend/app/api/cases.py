@@ -1,13 +1,15 @@
 # backend/app/api/cases.py
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
+from fastapi.concurrency import run_in_threadpool
 from uuid import uuid4
-import os
+import io
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from ..core.database import get_async_session          # ← новое
 from ..core.config import settings
+from ..core.minio_client import get_minio
 from .. import models, schemas
 
 router = APIRouter(prefix="/cases", tags=["cases"])
@@ -44,18 +46,24 @@ async def upload_documents(
     if not case:
         raise HTTPException(404, "Case not found")
 
-    os.makedirs(settings.FILE_STORAGE_PATH, exist_ok=True)
+    client = get_minio()
     saved = 0
     for f in files:
         unique = f"{uuid4()}_{f.filename}"
-        dest = os.path.join(settings.FILE_STORAGE_PATH, unique)
-        with open(dest, "wb") as out:
-            out.write(await f.read())
+        data = await f.read()
+        await run_in_threadpool(
+            client.put_object,
+            settings.MINIO_BUCKET,
+            unique,
+            io.BytesIO(data),
+            len(data),
+            content_type=f.content_type,
+        )
 
         doc = models.CaseDocument(
             case_id=case_id,
             filename=f.filename,
-            path=dest,
+            path=unique,
         )
         db.add(doc)
         saved += 1
@@ -82,5 +90,18 @@ async def download_document(
     doc = await db.get(models.CaseDocument, doc_id)
     if not doc or doc.case_id != case_id:
         raise HTTPException(404, "Document not found")
-    return FileResponse(path=doc.path, filename=doc.filename)
+
+    client = get_minio()
+    resp = await run_in_threadpool(
+        client.get_object,
+        settings.MINIO_BUCKET,
+        doc.path,
+    )
+    data = resp.read()
+    resp.close()
+    return StreamingResponse(
+        io.BytesIO(data),
+        media_type="application/octet-stream",
+        headers={"Content-Disposition": f'attachment; filename="{doc.filename}"'},
+    )
 
