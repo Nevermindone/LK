@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Text
+from sqlalchemy import String, Integer, ForeignKey, DateTime, func, Text, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .core.database import Base
 
@@ -34,3 +34,13 @@ class CaseDocument(Base):
     )
 
     case: Mapped["Case"] = relationship(back_populates="documents")
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
+    hashed_password: Mapped[str] = mapped_column(String(200))
+    is_active: Mapped[bool] = mapped_column(Boolean, server_default="true")
+    subscription_active: Mapped[bool] = mapped_column(Boolean, server_default="true")

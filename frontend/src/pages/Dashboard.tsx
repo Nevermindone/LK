@@ -46,18 +46,27 @@ export default function Dashboard() {
           <h2 className="mb-2 text-lg font-semibold capitalize">{cat}</h2>
           <ul className="space-y-1">
             {list.map((c) => (
-              <li key={c.id}
-                  className="flex items-center justify-between rounded border px-4 py-2 bg-white shadow-sm">
-                <span>{c.title}</span>
-
-                <span className={`ml-3 rounded px-2 py-0.5 text-xs ${categoryColor[cat] ?? "bg-gray-200"}`}>
-                  {cat}
-                </span>
+              <li key={c.id}>
+                <Link
+                  to={`/cases/${c.id}`}
+                  className="flex items-center justify-between rounded border px-4 py-2 bg-white shadow-sm hover:bg-indigo-50"
+                >
+                  <span>{c.title}</span>
+                  <span className={`ml-3 rounded px-2 py-0.5 text-xs ${categoryColor[cat] ?? "bg-gray-200"}`}>{cat}</span>
+                </Link>
               </li>
             ))}
           </ul>
         </section>
       ))}
+      <div className="pt-4">
+        <Link
+          to="/new"
+          className="inline-block rounded bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+        >
+          Создать новое
+        </Link>
+      </div>
     </div>
   );
 }
