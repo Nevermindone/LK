@@ -35,7 +35,7 @@ export default function Dashboard() {
 
   /* группировка по категориям */
   const grouped = cases.reduce<Record<string, LegalCase[]>>((acc, c) => {
-    (acc[c.category] ||= []).push(c);
+    (acc[c.category.name] ||= []).push(c);
     return acc;
   }, {});
 
