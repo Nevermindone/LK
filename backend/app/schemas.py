@@ -28,3 +28,18 @@ class DocumentRead(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UserRead(BaseModel):
+    id: int
+    username: str
+    is_active: bool
+    subscription_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

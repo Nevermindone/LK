@@ -7,12 +7,17 @@ import io
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from ..core.database import get_async_session          # ← новое
+from ..core.database import get_async_session
 from ..core.config import settings
 from ..core.minio_client import get_minio
 from .. import models, schemas
+from .auth import get_current_user
 
-router = APIRouter(prefix="/cases", tags=["cases"])
+router = APIRouter(
+    prefix="/cases",
+    tags=["cases"],
+    dependencies=[Depends(get_current_user)],
+)
 
 
 @router.get("/", response_model=list[schemas.CaseRead])

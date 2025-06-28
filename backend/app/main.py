@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api import cases, categories
+from .api import cases, categories, auth
 
 app = FastAPI(title="LK API")
 
@@ -15,3 +15,4 @@ app.add_middleware(
 
 app.include_router(cases.router)
 app.include_router(categories.router)
+app.include_router(auth.router)

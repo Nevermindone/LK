@@ -6,6 +6,13 @@ import { Routes, Route, Navigate, Outlet, Link } from "react-router-dom";
 const Dashboard = React.lazy(() => import("@/pages/Dashboard"));
 const NewCase   = React.lazy(() => import("@/pages/NewCase"));
 const CaseView  = React.lazy(() => import("@/pages/CaseView"));
+const LoginPage = React.lazy(() => import("@/pages/Login"));
+
+function RequireAuth({ children }: { children: JSX.Element }) {
+  const token = localStorage.getItem("token");
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
+}
 
 /* --- простейший шапка + контейнер --- */
 function Layout() {
@@ -36,7 +43,8 @@ function Layout() {
 export default function App() {
   return (
     <Routes>
-      <Route element={<Layout />}>
+      <Route path="/login" element={<LoginPage />} />
+      <Route element={<RequireAuth><Layout /></RequireAuth>}>
         {/* главный экран со списком дел */}
         <Route index element={<Dashboard />} />
 
@@ -55,3 +63,4 @@ export default function App() {
     </Routes>
   );
 }
+
